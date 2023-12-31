@@ -19,30 +19,29 @@ library(ggplot2)
 library("ggdendro")
 ggdendrogram(hclust.col, rotate = TRUE)
 
-genesets <- colnames(mydata)                   # original order
-cluster_geneset_order <- genesets[hclust.col$order]  #
+genesets <- colnames(mydata)                         # original order
+cluster_geneset_order <- genesets[hclust.col$order]  # using the order of cluster
 
+# convert to matrix form (25 * 25) (there may be a smarter way to do this)
+# split the 625-size vector to 25 equal size pieces
 split_vector <- split(cluster_geneset_order, rep(1:25, each = 25 ))
+# for each of 25 pieces, convert it to 5 * 5 matrix
 matrix_list  <- lapply(split_vector, function(x) matrix(x, nrow=5, ncol=5))
-m1 <- do.call(cbind, matrix_list[1:5]   )
-m2 <- do.call(cbind, matrix_list[6:10]  )
-m3 <- do.call(cbind, matrix_list[11:15] )
-m4 <- do.call(cbind, matrix_list[16:20] )
-m5 <- do.call(cbind, matrix_list[21:25] )
-m  <- rbind(m1,m2,m3,m4,m5)
+# cbind five matrices for every five of 25 
+m1 <- do.call(cbind, matrix_list[1:5]   )   # 5 * 25
+m2 <- do.call(cbind, matrix_list[6:10]  )   # 5 * 25
+m3 <- do.call(cbind, matrix_list[11:15] )   # 5 * 25
+m4 <- do.call(cbind, matrix_list[16:20] )   # 5 * 25
+m5 <- do.call(cbind, matrix_list[21:25] )   # 5 * 25
+# rbind the five 5 * 25 matrix 
+m  <- rbind(m1,m2,m3,m4,m5)                 # : 25 * 25
 
+# convert back to vector
 combined_list <- lapply(1:nrow(m), function(i) m[i,, drop=F] )
 final_list    <- unlist(combined_list)
-write.csv(final_list, file="final_list.csv", row.names=F)
-write.csv(final_list, file="final_list2.csv", row.names=T)
 
+#write.csv(final_list, file="final_list.csv", row.names=F)
+#write.csv(final_list, file="final_list2.csv", row.names=T)
+
+# new data in the image-like vector
 mydata2 <- mydata[,final_list]
-write.csv(mydata2, file="ERR3379693_healthy_matirx.csv")
-
-apop <- read.csv("ERR3379692_apoptotic_kegg2_rm_missing_correlated.csv", header=T, row.names=1)  
-apop2 <- apop[, final_list]
-write.csv(apop2, file="ERR3379692_apoptotic_matirx.csv")
-
-proapop <- read.csv("ERR3379695_proapoptotic_kegg2_rm_missing_correlated.csv", header=T, row.names=1) 
-proapop2 <- proapop[, final_list]
-write.csv(proapop2, file="ERR3379695_proapoptotic_matirx.csv")
