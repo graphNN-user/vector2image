@@ -1,0 +1,39 @@
+# get data from text file
+# display image or pixels or label
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# dim: 28 * 28 for mnist data
+# last column is the label of digit
+def show_image(txt_file, idx):
+  all_data = np.loadtxt(txt_file, delimiter="\t", usecols=range(0,785), dtype=np.int64)
+  x_data = all_data[:,0:784]  # all rows, 784 cols
+  pixels = x_data[idx]
+  pixels = pixels.reshape((28,28))
+  plt.tight_layout()
+  plt.imshow(pixels, cmap=plt.get_cmap('gray_r'))
+  plt.show()
+
+def display_pixel(txt_file, idx):
+  all_data = np.loadtxt(txt_file, delimiter="\t", usecols=range(0,785), dtype=np.int64)
+  x_data = all_data[:,0:784]  # all rows, 784 cols
+  pixels = x_data[idx]
+  pixels = pixels.reshape((28,28))
+  for i in range(28):
+    for j in range(28):
+      print("%3d" % pixels[i,j], end="")
+      print(" ", end="")
+    print("")
+
+def display_label(txt_file, idx):
+  all_data = np.loadtxt(txt_file, delimiter="\t", usecols=range(0,785), dtype=np.int64)
+  y_data = all_data[:,784]    # all rows, last col
+  label = y_data[idx]
+  print("digit = ", str(label), "\n")
+
+
+img_file = "mnist_test_100.txt"
+show_image(img_file, idx=0)
+display_pixel(img_file, idx=0)
+display_label(img_file, idx=0)
